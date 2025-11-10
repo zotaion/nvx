@@ -57,7 +57,9 @@ require("plugins.autopairs")
 require("plugins.surround")
 require("plugins.smartsplit")
 require("plugins.supermaven")
-require("plugins.springboot-nvim")
+-- Disabled due to autocmd errors on non-Spring Boot Java files
+-- Users can manually enable by uncommenting this line
+-- require("plugins.springboot-nvim")
 require("plugins.opencode")
 require("plugins.whichkey")
 require("plugins.diffview")
