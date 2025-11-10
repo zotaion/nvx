@@ -47,11 +47,14 @@ local function get_jdtls()
     if vim.fn.filereadable(config .. "/config.ini") == 0 then
         -- Remove old incomplete copy if it exists
         vim.fn.system(string.format("rm -rf '%s'", config))
+        -- Ensure parent directory exists
         vim.fn.mkdir(cache_dir, "p")
-        -- Copy recursively with all files including hidden ones
-        vim.fn.system(string.format("cp -rL '%s' '%s'", config_source, config))
+        -- Copy directory contents (using shell expansion to handle all files including hidden)
+        vim.fn.system(string.format("sh -c 'cp -rL \"%s\"/* \"%s\"/  2>/dev/null || true'", config_source, config))
+        -- Also copy hidden files if any
+        vim.fn.system(string.format("sh -c 'cp -rL \"%s\"/.[!.]* \"%s\"/ 2>/dev/null || true'", config_source, config))
         -- Make writable
-        vim.fn.system(string.format("chmod -R u+w '%s'", config))
+        vim.fn.system(string.format("chmod -R u+w '%s' 2>/dev/null || true", config))
     end
 
     -- Obtain the path to the Lombok jar (optional - Nix JDTLS doesn't include it)
