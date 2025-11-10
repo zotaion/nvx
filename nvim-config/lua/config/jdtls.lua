@@ -45,23 +45,35 @@ local function get_jdtls()
 
     -- Copy config to writable location if config.ini doesn't exist
     if vim.fn.filereadable(config .. "/config.ini") == 0 then
+        vim.notify(string.format("JDTLS: Copying config\nSource: %s\nDest: %s", config_source, config), vim.log.levels.INFO)
         -- Remove old incomplete copy if it exists
-        vim.fn.system(string.format("rm -rf '%s'", config))
+        local rm_result = vim.fn.system(string.format("rm -rf '%s'", config))
+        vim.notify("rm result: " .. (rm_result or "OK"), vim.log.levels.DEBUG)
         -- Ensure parent directory exists
         vim.fn.mkdir(cache_dir, "p")
         -- Copy the entire source directory to a temp location
         local temp_config = cache_dir .. "/temp_config"
         vim.fn.system(string.format("rm -rf '%s'", temp_config))
-        vim.fn.system(string.format("cp -rL '%s' '%s'", config_source, temp_config))
-        -- Rename temp to final location
-        vim.fn.system(string.format("mv '%s' '%s'", temp_config, config))
+        local cp_cmd = string.format("cp -rL '%s' '%s' 2>&1", config_source, temp_config)
+        local cp_result = vim.fn.system(cp_cmd)
+        vim.notify(string.format("cp command: %s\ncp result: %s\ncp error: %d", cp_cmd, cp_result, vim.v.shell_error), vim.log.levels.DEBUG)
+        -- Check if temp_config was created
+        if vim.fn.isdirectory(temp_config) == 1 then
+            vim.notify("temp_config exists, moving...", vim.log.levels.DEBUG)
+            -- Rename temp to final location
+            local mv_cmd = string.format("mv '%s' '%s' 2>&1", temp_config, config)
+            local mv_result = vim.fn.system(mv_cmd)
+            vim.notify(string.format("mv result: %s\nmv error: %d", mv_result, vim.v.shell_error), vim.log.levels.DEBUG)
+        else
+            vim.notify("ERROR: temp_config was not created!", vim.log.levels.ERROR)
+        end
         -- Make writable
         vim.fn.system(string.format("chmod -R u+w '%s'", config))
         -- Verify config.ini was copied
         if vim.fn.filereadable(config .. "/config.ini") == 1 then
-            vim.notify("JDTLS: Config ready", vim.log.levels.INFO)
+            vim.notify("JDTLS: Config ready ✓", vim.log.levels.INFO)
         else
-            vim.notify("JDTLS: ERROR - config.ini missing! Check " .. config, vim.log.levels.ERROR)
+            vim.notify("JDTLS: ERROR - config.ini still missing after copy!", vim.log.levels.ERROR)
         end
     end
 
