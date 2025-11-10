@@ -27,14 +27,27 @@ local function get_jdtls()
 
     -- Declare which operating system we are using, windows use win, macos use mac
     local SYSTEM = "linux"
+
     -- Obtain the path to configuration files for your specific operating system
     -- Try Nix structure first (/share/java/jdtls/config_linux), then Mason structure
-    local config = jdtls_path .. "/share/java/jdtls/config_" .. SYSTEM
-    if vim.fn.isdirectory(config) == 0 then
-        config = jdtls_path .. "/config_" .. SYSTEM
+    local config_source = jdtls_path .. "/share/java/jdtls/config_" .. SYSTEM
+    if vim.fn.isdirectory(config_source) == 0 then
+        config_source = jdtls_path .. "/config_" .. SYSTEM
     end
+    if vim.fn.isdirectory(config_source) == 0 then
+        config_source = jdtls_path .. "/share/config_" .. SYSTEM
+    end
+
+    -- JDTLS needs to write to the config directory (for native libs, logs, etc.)
+    -- Since Nix store is read-only, we need to copy config to a writable location
+    local cache_dir = vim.fn.stdpath("cache") .. "/jdtls"
+    local config = cache_dir .. "/config_" .. SYSTEM
+
+    -- Copy config to writable location if not already done or if source is newer
     if vim.fn.isdirectory(config) == 0 then
-        config = jdtls_path .. "/share/config_" .. SYSTEM
+        vim.fn.mkdir(cache_dir, "p")
+        -- Use system cp command to copy recursively
+        vim.fn.system(string.format("cp -r '%s' '%s'", config_source, config))
     end
 
     -- Obtain the path to the Lombok jar (optional - Nix JDTLS doesn't include it)
