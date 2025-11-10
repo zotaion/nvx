@@ -45,24 +45,23 @@ local function get_jdtls()
 
     -- Copy config to writable location if config.ini doesn't exist
     if vim.fn.filereadable(config .. "/config.ini") == 0 then
-        vim.notify("JDTLS: Copying config from Nix store...", vim.log.levels.INFO)
         -- Remove old incomplete copy if it exists
         vim.fn.system(string.format("rm -rf '%s'", config))
-        -- Create the config directory
-        vim.fn.mkdir(config, "p")
-        -- Copy directory contents (using shell expansion to handle all files including hidden)
-        local copy_cmd = string.format("sh -c 'cp -rL \"%s\"/* \"%s\"/ 2>&1'", config_source, config)
-        local result = vim.fn.system(copy_cmd)
-        if vim.v.shell_error ~= 0 then
-            vim.notify("JDTLS: Copy failed: " .. result, vim.log.levels.ERROR)
-        end
+        -- Ensure parent directory exists
+        vim.fn.mkdir(cache_dir, "p")
+        -- Copy the entire source directory to a temp location
+        local temp_config = cache_dir .. "/temp_config"
+        vim.fn.system(string.format("rm -rf '%s'", temp_config))
+        vim.fn.system(string.format("cp -rL '%s' '%s'", config_source, temp_config))
+        -- Rename temp to final location
+        vim.fn.system(string.format("mv '%s' '%s'", temp_config, config))
         -- Make writable
         vim.fn.system(string.format("chmod -R u+w '%s'", config))
         -- Verify config.ini was copied
         if vim.fn.filereadable(config .. "/config.ini") == 1 then
-            vim.notify("JDTLS: Config copied successfully", vim.log.levels.INFO)
+            vim.notify("JDTLS: Config ready", vim.log.levels.INFO)
         else
-            vim.notify("JDTLS: ERROR - config.ini not found after copy!", vim.log.levels.ERROR)
+            vim.notify("JDTLS: ERROR - config.ini missing! Check " .. config, vim.log.levels.ERROR)
         end
     end
 
