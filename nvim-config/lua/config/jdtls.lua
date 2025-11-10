@@ -43,11 +43,15 @@ local function get_jdtls()
     local cache_dir = vim.fn.stdpath("cache") .. "/jdtls"
     local config = cache_dir .. "/config_" .. SYSTEM
 
-    -- Copy config to writable location if not already done or if source is newer
-    if vim.fn.isdirectory(config) == 0 then
+    -- Copy config to writable location if config.ini doesn't exist
+    if vim.fn.filereadable(config .. "/config.ini") == 0 then
+        -- Remove old incomplete copy if it exists
+        vim.fn.system(string.format("rm -rf '%s'", config))
         vim.fn.mkdir(cache_dir, "p")
-        -- Use system cp command to copy recursively
-        vim.fn.system(string.format("cp -r '%s' '%s'", config_source, config))
+        -- Copy recursively with all files including hidden ones
+        vim.fn.system(string.format("cp -rL '%s' '%s'", config_source, config))
+        -- Make writable
+        vim.fn.system(string.format("chmod -R u+w '%s'", config))
     end
 
     -- Obtain the path to the Lombok jar (optional - Nix JDTLS doesn't include it)

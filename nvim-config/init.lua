@@ -2,7 +2,7 @@
 -- All plugins are provided via Nix, no runtime plugin manager needed
 vim.g.have_nerd_font = true
 
--- Suppress specific deprecation warnings and informational messages
+-- Suppress specific deprecation warnings
 local notify_original = vim.notify
 vim.notify = function(msg, ...)
     if
@@ -12,7 +12,6 @@ vim.notify = function(msg, ...)
             or msg:match 'Defaulting to position encoding of the first client'
             or msg:match 'multiple different client offset_encodings'
             or msg:match 'lspconfig.*framework.*is deprecated'
-            or msg:match 'Client jdtls quit with exit code 13' -- JDTLS initialization shutdown (harmless)
         )
     then
         return
