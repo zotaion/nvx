@@ -45,35 +45,32 @@ local function get_jdtls()
 
     -- Copy config to writable location if config.ini doesn't exist
     if vim.fn.filereadable(config .. "/config.ini") == 0 then
-        vim.notify(string.format("JDTLS: Copying config\nSource: %s\nDest: %s", config_source, config), vim.log.levels.INFO)
         -- Remove old incomplete copy if it exists
-        local rm_result = vim.fn.system(string.format("rm -rf '%s'", config))
-        vim.notify("rm result: " .. (rm_result or "OK"), vim.log.levels.DEBUG)
+        vim.fn.system(string.format("rm -rf '%s' '%s'", config, cache_dir .. "/temp_config"))
         -- Ensure parent directory exists
         vim.fn.mkdir(cache_dir, "p")
-        -- Copy the entire source directory to a temp location
-        local temp_config = cache_dir .. "/temp_config"
-        vim.fn.system(string.format("rm -rf '%s'", temp_config))
-        local cp_cmd = string.format("cp -rL '%s' '%s' 2>&1", config_source, temp_config)
-        local cp_result = vim.fn.system(cp_cmd)
-        vim.notify(string.format("cp command: %s\ncp result: %s\ncp error: %d", cp_cmd, cp_result, vim.v.shell_error), vim.log.levels.DEBUG)
-        -- Check if temp_config was created
-        if vim.fn.isdirectory(temp_config) == 1 then
-            vim.notify("temp_config exists, moving...", vim.log.levels.DEBUG)
-            -- Rename temp to final location
-            local mv_cmd = string.format("mv '%s' '%s' 2>&1", temp_config, config)
-            local mv_result = vim.fn.system(mv_cmd)
-            vim.notify(string.format("mv result: %s\nmv error: %d", mv_result, vim.v.shell_error), vim.log.levels.DEBUG)
+
+        -- Use a single atomic command to copy and rename
+        -- This ensures the copy completes before JDTLS tries to use it
+        local copy_script = string.format([[
+            set -e
+            TEMP_DIR='%s/temp_config'
+            FINAL_DIR='%s'
+            rm -rf "$TEMP_DIR" "$FINAL_DIR"
+            cp -rL '%s' "$TEMP_DIR"
+            mv "$TEMP_DIR" "$FINAL_DIR"
+            chmod -R u+w "$FINAL_DIR"
+            test -f "$FINAL_DIR/config.ini" && echo "SUCCESS" || echo "FAILED"
+        ]], cache_dir, config, config_source)
+
+        local result = vim.fn.system({"sh", "-c", copy_script})
+
+        if result:match("SUCCESS") then
+            vim.notify("JDTLS: Config ready", vim.log.levels.INFO)
         else
-            vim.notify("ERROR: temp_config was not created!", vim.log.levels.ERROR)
-        end
-        -- Make writable
-        vim.fn.system(string.format("chmod -R u+w '%s'", config))
-        -- Verify config.ini was copied
-        if vim.fn.filereadable(config .. "/config.ini") == 1 then
-            vim.notify("JDTLS: Config ready ✓", vim.log.levels.INFO)
-        else
-            vim.notify("JDTLS: ERROR - config.ini still missing after copy!", vim.log.levels.ERROR)
+            vim.notify("JDTLS: Config copy failed - " .. result, vim.log.levels.ERROR)
+            -- Fallback: try direct copy as last resort
+            vim.fn.system(string.format("mkdir -p '%s' && cp -f '%s/config.ini' '%s/' 2>/dev/null || true", config, config_source, config))
         end
     end
 
