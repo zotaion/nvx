@@ -16,7 +16,11 @@ local function get_jdtls()
     end
 
     -- Obtain the path to the jar which runs the language server
-    local launcher = vim.fn.glob(jdtls_path .. "/plugins/org.eclipse.equinox.launcher_*.jar")
+    -- Try Nix structure first (/share/java/jdtls/plugins/), then Mason structure
+    local launcher = vim.fn.glob(jdtls_path .. "/share/java/jdtls/plugins/org.eclipse.equinox.launcher_*.jar")
+    if launcher == "" then
+        launcher = vim.fn.glob(jdtls_path .. "/plugins/org.eclipse.equinox.launcher_*.jar")
+    end
     if launcher == "" then
         launcher = vim.fn.glob(jdtls_path .. "/share/java/plugins/org.eclipse.equinox.launcher_*.jar")
     end
@@ -24,13 +28,20 @@ local function get_jdtls()
     -- Declare which operating system we are using, windows use win, macos use mac
     local SYSTEM = "linux"
     -- Obtain the path to configuration files for your specific operating system
-    local config = jdtls_path .. "/config_" .. SYSTEM
+    -- Try Nix structure first (/share/java/jdtls/config_linux), then Mason structure
+    local config = jdtls_path .. "/share/java/jdtls/config_" .. SYSTEM
+    if vim.fn.isdirectory(config) == 0 then
+        config = jdtls_path .. "/config_" .. SYSTEM
+    end
     if vim.fn.isdirectory(config) == 0 then
         config = jdtls_path .. "/share/config_" .. SYSTEM
     end
 
-    -- Obtain the path to the Lombok jar
-    local lombok = jdtls_path .. "/lombok.jar"
+    -- Obtain the path to the Lombok jar (optional - Nix JDTLS doesn't include it)
+    local lombok = jdtls_path .. "/share/java/jdtls/lombok.jar"
+    if vim.fn.filereadable(lombok) == 0 then
+        lombok = jdtls_path .. "/lombok.jar"
+    end
     if vim.fn.filereadable(lombok) == 0 then
         lombok = jdtls_path .. "/share/lombok.jar"
     end
@@ -165,7 +176,15 @@ local function setup_jdtls()
         '--add-modules=ALL-SYSTEM',
         '--add-opens', 'java.base/java.util=ALL-UNNAMED',
         '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
-        '-javaagent:' .. lombok,
+    }
+
+    -- Add Lombok javaagent if it exists
+    if vim.fn.filereadable(lombok) == 1 then
+        table.insert(cmd, '-javaagent:' .. lombok)
+    end
+
+    -- Add remaining command arguments
+    vim.list_extend(cmd, {
         '-jar',
         launcher,
         '-configuration',
@@ -173,8 +192,7 @@ local function setup_jdtls()
         '-data',
         workspace_dir,
         '-clean',
-
-    }
+    })
 
     -- Configure settings in the JDTLS server
     local settings = {
