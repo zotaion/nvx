@@ -24,9 +24,21 @@ do
         end, {desc = "[J]ava Create [E]num"})
 
     -- run the setup function with default configuration
-    -- Only setup keymaps for Spring Boot projects
+    -- Manually configure to prevent auto-detection errors on non-Spring Boot files
     springboot_nvim.setup({
-        -- Disable auto-detection on file open to prevent errors on non-Spring Boot files
-        jdtls_name = "jdtls"
+        jdtls_name = "jdtls",
+        -- Don't run setup automatically - user will trigger manually via keybindings
+        spring_boot = {
+            file_watch_delay = 1000
+        }
+    })
+
+    -- Disable the plugin's autocommand that runs on Java files
+    -- It will still work when manually triggered via keybindings
+    vim.api.nvim_create_autocmd("VimEnter", {
+        callback = function()
+            -- Clear springboot-nvim autocommands to prevent errors on non-Spring Boot files
+            pcall(vim.api.nvim_clear_autocmds, {group = "SpringBootNvim"})
+        end
     })
 end
