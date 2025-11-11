@@ -51,16 +51,11 @@ do
         lspconfig[server].setup(config)
     end
 
-    -- Angular language server - use function for cmd to override dynamic computation
-    -- lspconfig.angularls has special logic that computes cmd dynamically, so we override it with a function
-    lspconfig.angularls.default_config.cmd = function(config)
-        return { "ngserver", "--stdio", "--tsProbeLocations", config.root_dir, "--ngProbeLocations", config.root_dir }
-    end
-    lspconfig.angularls.setup({
-        capabilities = capabilities,
-        filetypes = { "typescript", "html", "typescriptreact", "typescript.tsx" },
-        root_dir = util.root_pattern('angular.json', 'project.json'),
-    })
+    -- Angular language server - DISABLED
+    -- lspconfig.angularls has complex embedded logic that can't be overridden for global installation
+    -- For Angular projects, use ts_ls which provides TypeScript support
+    -- Or install per-project: cd your-project && npm install --save-dev @angular/language-server
+    -- Then lspconfig will auto-detect it from node_modules
 
 
             local default_diagnostic_config = {
