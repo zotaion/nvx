@@ -43,6 +43,7 @@ do
         zls = {},
         angularls = {
             -- Angular language server specific settings
+            cmd = { "ngserver", "--stdio", "--tsProbeLocations", ".", "--ngProbeLocations", "." },
             filetypes = { "typescript", "html", "typescriptreact", "typescript.tsx" },
             root_dir = util.root_pattern('angular.json', 'project.json'),
         },
