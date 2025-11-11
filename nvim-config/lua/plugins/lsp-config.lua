@@ -52,10 +52,15 @@ do
     end
 
     -- Angular language server - DISABLED globally due to complex auto-detection issues
+    -- Explicitly disable angularls to prevent auto-start
+    lspconfig.angularls.setup({
+        autostart = false,
+    })
+
     -- For Angular projects, install per-project:
     --   cd ~/Documents/work/mewi/service-frontend
     --   npm install --save-dev @angular/language-server
-    -- Then restart nvim - lspconfig will auto-detect it from node_modules
+    -- Then restart nvim - it will work from node_modules
     --
     -- ts_ls provides excellent TypeScript support for Angular projects
 
