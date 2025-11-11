@@ -51,9 +51,11 @@ do
         lspconfig[server].setup(config)
     end
 
-    -- Angular language server - override default_config BEFORE setup
-    -- This prevents lspconfig's auto-detection from running
-    lspconfig.angularls.default_config.cmd = { "ngserver", "--stdio", "--tsProbeLocations", ".", "--ngProbeLocations", "." }
+    -- Angular language server - use function for cmd to override dynamic computation
+    -- lspconfig.angularls has special logic that computes cmd dynamically, so we override it with a function
+    lspconfig.angularls.default_config.cmd = function(config)
+        return { "ngserver", "--stdio", "--tsProbeLocations", config.root_dir, "--ngProbeLocations", config.root_dir }
+    end
     lspconfig.angularls.setup({
         capabilities = capabilities,
         filetypes = { "typescript", "html", "typescriptreact", "typescript.tsx" },
