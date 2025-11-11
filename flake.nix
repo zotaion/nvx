@@ -185,7 +185,7 @@
 
         angularTools = [
           pkgs.nodejs  # Required for Angular development and npm
-          # Angular LS: Install per-project with npm install --save-dev @angular/language-server
+          pkgs.angular-language-server  # Angular language server
         ];
 
         tools = [

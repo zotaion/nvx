@@ -51,18 +51,48 @@ do
         lspconfig[server].setup(config)
     end
 
-    -- Angular language server - DISABLED globally due to complex auto-detection issues
-    -- Explicitly disable angularls to prevent auto-start
+    -- Angular language server - override on_new_config to fix cmd resolution
+    -- The default on_new_config uses vim.fn.exepath() which fails with Nix-provided ngserver
     lspconfig.angularls.setup({
-        autostart = false,
-    })
+        capabilities = capabilities,
+        on_new_config = function(new_config, new_root_dir)
+            -- Helper functions from lspconfig
+            local function get_probe_dir(root_dir)
+                local project_root = vim.fs.dirname(vim.fs.find('node_modules', { path = root_dir, upward = true })[1])
+                return project_root and (project_root .. '/node_modules') or ''
+            end
 
-    -- For Angular projects, install per-project:
-    --   cd ~/Documents/work/mewi/service-frontend
-    --   npm install --save-dev @angular/language-server
-    -- Then restart nvim - it will work from node_modules
-    --
-    -- ts_ls provides excellent TypeScript support for Angular projects
+            local function get_angular_core_version(root_dir)
+                local project_root = vim.fs.dirname(vim.fs.find('node_modules', { path = root_dir, upward = true })[1])
+                if not project_root then return '' end
+
+                local package_json = project_root .. '/package.json'
+                if not vim.uv.fs_stat(package_json) then return '' end
+
+                local contents = io.open(package_json):read('*a')
+                local json = vim.json.decode(contents)
+                if not json.dependencies then return '' end
+
+                local angular_core_version = json.dependencies['@angular/core']
+                return angular_core_version and angular_core_version:match('%d+%.%d+%.%d+') or ''
+            end
+
+            local new_probe_dir = get_probe_dir(new_root_dir)
+            local angular_core_version = get_angular_core_version(new_root_dir)
+
+            -- Use 'ngserver' directly instead of vim.fn.exepath() which fails with Nix PATH
+            new_config.cmd = {
+                'ngserver',  -- Will be found in PATH from Nix wrapper
+                '--stdio',
+                '--tsProbeLocations',
+                new_probe_dir,
+                '--ngProbeLocations',
+                new_probe_dir,
+                '--angularCoreVersion',
+                angular_core_version,
+            }
+        end,
+    })
 
 
             local default_diagnostic_config = {
