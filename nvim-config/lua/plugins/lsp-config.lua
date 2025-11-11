@@ -51,17 +51,13 @@ do
         lspconfig[server].setup(config)
     end
 
-    -- Angular language server - setup separately with explicit cmd override
-    -- Must override default_config.cmd to prevent auto-detection issues
+    -- Angular language server - override default_config BEFORE setup
+    -- This prevents lspconfig's auto-detection from running
+    lspconfig.angularls.default_config.cmd = { "ngserver", "--stdio", "--tsProbeLocations", ".", "--ngProbeLocations", "." }
     lspconfig.angularls.setup({
         capabilities = capabilities,
-        cmd = { "ngserver", "--stdio", "--tsProbeLocations", ".", "--ngProbeLocations", "." },
         filetypes = { "typescript", "html", "typescriptreact", "typescript.tsx" },
         root_dir = util.root_pattern('angular.json', 'project.json'),
-        on_new_config = function(new_config, new_root_dir)
-            -- Force cmd to always use ngserver
-            new_config.cmd = { "ngserver", "--stdio", "--tsProbeLocations", ".", "--ngProbeLocations", "." }
-        end,
     })
 
 
