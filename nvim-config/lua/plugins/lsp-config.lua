@@ -51,23 +51,13 @@ do
         lspconfig[server].setup(config)
     end
 
-    -- Angular language server - using vim.lsp.start() to bypass lspconfig auto-detection
-    -- Set up an autocommand to start angularls manually in Angular projects
-    vim.api.nvim_create_autocmd("FileType", {
-        pattern = { "typescript", "html", "typescriptreact" },
-        callback = function(args)
-            local root_dir = util.root_pattern('angular.json', 'project.json')(args.file)
-            if root_dir then
-                vim.lsp.start({
-                    name = "angularls",
-                    cmd = { "ngserver", "--stdio", "--tsProbeLocations", root_dir, "--ngProbeLocations", root_dir },
-                    root_dir = root_dir,
-                    capabilities = capabilities,
-                    filetypes = { "typescript", "html", "typescriptreact", "typescript.tsx" },
-                })
-            end
-        end,
-    })
+    -- Angular language server - DISABLED globally due to complex auto-detection issues
+    -- For Angular projects, install per-project:
+    --   cd ~/Documents/work/mewi/service-frontend
+    --   npm install --save-dev @angular/language-server
+    -- Then restart nvim - lspconfig will auto-detect it from node_modules
+    --
+    -- ts_ls provides excellent TypeScript support for Angular projects
 
 
             local default_diagnostic_config = {
