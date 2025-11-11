@@ -2,10 +2,11 @@
 do
     require('conform').setup({
         notify_on_error = false,
-        format_on_save = {
-            timeout_ms = 500,
-            lsp_format = 'fallback',
-        },
+        -- Disabled auto-format on save - use <leader>cf to format manually
+        -- format_on_save = {
+        --     timeout_ms = 500,
+        --     lsp_format = 'fallback',
+        -- },
         formatters_by_ft = {
             lua = { 'stylua' },
             java = { 'google-java-format' },
@@ -53,7 +54,8 @@ do
         },
     })
 
-    -- Keybinding
+    -- Manual formatting keybinding: <leader>cf
+    -- Formats the current buffer using the configured formatter
     vim.keymap.set('', '<leader>cf', function()
         require('conform').format { async = true, lsp_format = 'fallback' }
     end, { desc = '[C]ode [F]ormat buffer' })

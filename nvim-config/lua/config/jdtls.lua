@@ -74,13 +74,19 @@ local function get_jdtls()
         end
     end
 
-    -- Obtain the path to the Lombok jar (optional - Nix JDTLS doesn't include it)
-    local lombok = jdtls_path .. "/share/java/jdtls/lombok.jar"
-    if vim.fn.filereadable(lombok) == 0 then
-        lombok = jdtls_path .. "/lombok.jar"
-    end
-    if vim.fn.filereadable(lombok) == 0 then
-        lombok = jdtls_path .. "/share/lombok.jar"
+    -- Obtain the path to the Lombok jar
+    -- First check LOMBOK_PATH environment variable (set by Nix wrapper)
+    local lombok = vim.fn.getenv("LOMBOK_PATH")
+
+    -- If LOMBOK_PATH is not set, try to find lombok.jar in standard locations
+    if lombok == vim.NIL or lombok == "" or vim.fn.filereadable(lombok) == 0 then
+        lombok = jdtls_path .. "/share/java/jdtls/lombok.jar"
+        if vim.fn.filereadable(lombok) == 0 then
+            lombok = jdtls_path .. "/lombok.jar"
+        end
+        if vim.fn.filereadable(lombok) == 0 then
+            lombok = jdtls_path .. "/share/lombok.jar"
+        end
     end
 
     return launcher, config, lombok

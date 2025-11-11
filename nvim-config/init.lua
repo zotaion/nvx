@@ -56,6 +56,7 @@ require("plugins.comment")
 require("plugins.autopairs")
 require("plugins.surround")
 require("plugins.smartsplit")
+require("plugins.neoscroll")
 require("plugins.supermaven")
 -- Disabled due to autocmd errors on non-Spring Boot Java files
 -- Users can manually enable by uncommenting this line

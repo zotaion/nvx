@@ -126,6 +126,7 @@
           nvim-autopairs
           vim-surround
           smart-splits-nvim
+          neoscroll-nvim
 
           # Java/Spring Boot
           springboot-nvim
@@ -169,6 +170,11 @@
           # Or add it to your project's package.json devDependencies
         ];
 
+        # Java tools
+        javaTools = [
+          pkgs.lombok  # Lombok agent for jdtls
+        ];
+
         formatters = [
           pkgs.stylua
           pkgs.google-java-format
@@ -202,8 +208,9 @@
               --add-flags "--cmd 'set runtimepath^=${neovimConfig}'" \
               --set NVIM_APPNAME "nvx" \
               --prefix XDG_DATA_DIRS : "${packpath}" \
-              --prefix PATH : ${pkgs.lib.makeBinPath (lspServers ++ formatters ++ tools ++ angularTools)} \
-              --set JDTLS_PATH "${pkgs.jdt-language-server}"
+              --prefix PATH : ${pkgs.lib.makeBinPath (lspServers ++ formatters ++ tools ++ angularTools ++ javaTools)} \
+              --set JDTLS_PATH "${pkgs.jdt-language-server}" \
+              --set LOMBOK_PATH "${pkgs.lombok}/share/java/lombok.jar"
           '';
         };
 
@@ -225,7 +232,7 @@
         };
 
         devShells.default = pkgs.mkShell {
-          buildInputs = [ nvx ] ++ lspServers ++ formatters ++ tools ++ angularTools;
+          buildInputs = [ nvx ] ++ lspServers ++ formatters ++ tools ++ angularTools ++ javaTools;
         };
       }
     );
