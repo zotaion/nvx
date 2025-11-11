@@ -51,11 +51,23 @@ do
         lspconfig[server].setup(config)
     end
 
-    -- Angular language server - DISABLED
-    -- lspconfig.angularls has complex embedded logic that can't be overridden for global installation
-    -- For Angular projects, use ts_ls which provides TypeScript support
-    -- Or install per-project: cd your-project && npm install --save-dev @angular/language-server
-    -- Then lspconfig will auto-detect it from node_modules
+    -- Angular language server - using vim.lsp.start() to bypass lspconfig auto-detection
+    -- Set up an autocommand to start angularls manually in Angular projects
+    vim.api.nvim_create_autocmd("FileType", {
+        pattern = { "typescript", "html", "typescriptreact" },
+        callback = function(args)
+            local root_dir = util.root_pattern('angular.json', 'project.json')(args.file)
+            if root_dir then
+                vim.lsp.start({
+                    name = "angularls",
+                    cmd = { "ngserver", "--stdio", "--tsProbeLocations", root_dir, "--ngProbeLocations", root_dir },
+                    root_dir = root_dir,
+                    capabilities = capabilities,
+                    filetypes = { "typescript", "html", "typescriptreact", "typescript.tsx" },
+                })
+            end
+        end,
+    })
 
 
             local default_diagnostic_config = {

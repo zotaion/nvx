@@ -185,7 +185,7 @@
 
         angularTools = [
           pkgs.nodejs  # Required for Angular development and npm
-          # angular-language-server removed - install per-project via npm instead
+          pkgs.angular-language-server  # Angular language server (configured via vim.lsp.start)
         ];
 
         tools = [
