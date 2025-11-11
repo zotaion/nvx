@@ -68,6 +68,10 @@ do
             -- Disable strict template checking to reduce false positives
             strictTemplates = false,
         },
+        -- Disable diagnostics from angularls, keep only navigation/completion
+        handlers = {
+            ["textDocument/publishDiagnostics"] = function() end,
+        },
     })
 
 
