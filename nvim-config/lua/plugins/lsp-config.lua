@@ -41,13 +41,12 @@ do
         ts_ls = {},
         cssls = {},
         zls = {},
-        -- angularls = {
-        --     -- Angular language server - disabled, install per-project via npm
-        --     -- npm install --save-dev @angular/language-server
-        --     cmd = { "ngserver", "--stdio", "--tsProbeLocations", ".", "--ngProbeLocations", "." },
-        --     filetypes = { "typescript", "html", "typescriptreact", "typescript.tsx" },
-        --     root_dir = util.root_pattern('angular.json', 'project.json'),
-        -- },
+        angularls = {
+            -- Angular language server (provided by Nix via angularTools)
+            cmd = { "ngserver", "--stdio", "--tsProbeLocations", ".", "--ngProbeLocations", "." },
+            filetypes = { "typescript", "html", "typescriptreact", "typescript.tsx" },
+            root_dir = util.root_pattern('angular.json', 'project.json'),
+        },
         html = {},
         eslint = {},
     }
