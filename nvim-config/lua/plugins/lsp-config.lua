@@ -9,7 +9,7 @@ do
 
     -- mason lsp config setup (LSP servers provided by Nix PATH)
     require("mason-lspconfig").setup({
-        ensure_installed = {},  -- Empty, Nix provides all servers: lua_ls, ts_ls, jdtls, cssls, zls, angularls, html, eslint
+        ensure_installed = {},  -- Empty, Nix provides all servers: lua_ls, ts_ls, jdtls, cssls, zls, html, eslint, angularls
         automatic_installation = false,
     })
 
@@ -51,11 +51,9 @@ do
         lspconfig[server].setup(config)
     end
 
-    -- Angular language server - DISABLED
-    -- lspconfig's angularls has deeply embedded auto-detection that can't be overridden
-    -- Use ts_ls for TypeScript support in Angular projects
+    -- Angular language server
     lspconfig.angularls.setup({
-        autostart = false,
+        capabilities = capabilities,
     })
 
 
