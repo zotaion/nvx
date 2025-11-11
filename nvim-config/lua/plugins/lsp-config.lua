@@ -41,7 +41,16 @@ do
         ts_ls = {},
         cssls = {},
         zls = {},
-        html = {},
+        html = {
+            -- Don't start in Angular projects - let angularls handle it
+            root_dir = function(fname)
+                local angular_root = util.root_pattern('angular.json', '.git')(fname)
+                if angular_root then
+                    return nil  -- Don't start html LS in Angular projects
+                end
+                return util.root_pattern('package.json', '.git')(fname)
+            end,
+        },
         eslint = {},
     }
 
@@ -54,6 +63,11 @@ do
     -- Angular language server
     lspconfig.angularls.setup({
         capabilities = capabilities,
+        -- Reduce false positive diagnostics in templates
+        init_options = {
+            -- Disable strict template checking to reduce false positives
+            strictTemplates = false,
+        },
     })
 
 
