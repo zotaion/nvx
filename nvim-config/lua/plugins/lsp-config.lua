@@ -41,12 +41,6 @@ do
         ts_ls = {},
         cssls = {},
         zls = {},
-        angularls = {
-            -- Angular language server (provided by Nix via angularTools)
-            cmd = { "ngserver", "--stdio", "--tsProbeLocations", ".", "--ngProbeLocations", "." },
-            filetypes = { "typescript", "html", "typescriptreact", "typescript.tsx" },
-            root_dir = util.root_pattern('angular.json', 'project.json'),
-        },
         html = {},
         eslint = {},
     }
@@ -56,6 +50,19 @@ do
         config.capabilities = vim.tbl_deep_extend('force', {}, capabilities, config.capabilities or {})
         lspconfig[server].setup(config)
     end
+
+    -- Angular language server - setup separately with explicit cmd override
+    -- Must override default_config.cmd to prevent auto-detection issues
+    lspconfig.angularls.setup({
+        capabilities = capabilities,
+        cmd = { "ngserver", "--stdio", "--tsProbeLocations", ".", "--ngProbeLocations", "." },
+        filetypes = { "typescript", "html", "typescriptreact", "typescript.tsx" },
+        root_dir = util.root_pattern('angular.json', 'project.json'),
+        on_new_config = function(new_config, new_root_dir)
+            -- Force cmd to always use ngserver
+            new_config.cmd = { "ngserver", "--stdio", "--tsProbeLocations", ".", "--ngProbeLocations", "." }
+        end,
+    })
 
 
             local default_diagnostic_config = {
