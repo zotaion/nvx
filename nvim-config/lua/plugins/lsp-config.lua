@@ -50,6 +50,10 @@ do
                 end
                 return util.root_pattern('package.json', '.git')(fname)
             end,
+            -- Disable diagnostics to avoid false positives
+            handlers = {
+                ["textDocument/publishDiagnostics"] = function() end,
+            },
         },
         eslint = {},
     }
