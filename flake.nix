@@ -185,8 +185,7 @@
 
         angularTools = [
           pkgs.nodejs  # Required for Angular development and npm
-          # Note: Angular CLI and language server are best installed per-project
-          # Global install: npm install -g @angular/cli @angular/language-server
+          pkgs.angular-language-server  # Angular language server for LSP
         ];
 
         tools = [
