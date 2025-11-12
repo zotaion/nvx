@@ -40,6 +40,7 @@ require('which-key').setup({
         -- Document existing key chains
         spec = {
             { "<leader>/", group = "Comments" },
+            { "<leader>a", group = "[A]ngular", icon = "" },
             { "<leader>c", group = "[C]ode", icon = "" },
             { "<leader>d", group = "[D]ebug", icon = "" },
             { "<leader>e", group = "[E]xplorer", icon = "󰨀" },
