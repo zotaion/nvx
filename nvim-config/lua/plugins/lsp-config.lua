@@ -48,13 +48,15 @@ do
 				"typescriptreact",
 				"typescript.tsx",
 			},
-			-- Prevent ts_ls from starting in HTML files, even in Angular projects
-			root_dir = function(fname)
-				-- Never attach to HTML files
-				if fname:match("%.html$") then
+			root_dir = util.root_pattern("package.json", "tsconfig.json", "jsconfig.json", ".git"),
+			-- Prevent attaching to HTML files
+			on_new_config = function(config, root_dir)
+				-- Check if the current buffer is an HTML file
+				local bufname = vim.api.nvim_buf_get_name(0)
+				if bufname:match("%.html$") then
+					-- Abort the configuration
 					return nil
 				end
-				return util.root_pattern("package.json", "tsconfig.json", "jsconfig.json", ".git")(fname)
 			end,
 		},
 		cssls = {},
