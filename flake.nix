@@ -35,17 +35,6 @@
           };
         };
 
-        snacks-nvim = pkgs.vimUtils.buildVimPlugin {
-          pname = "snacks.nvim";
-          version = "2024-11-10";
-          src = pkgs.fetchFromGitHub {
-            owner = "folke";
-            repo = "snacks.nvim";
-            rev = "4e23c75b82aabdb189def39c2c7d2dc25dd0e8a8";
-            sha256 = "sha256-7kf2vy1pIPP/FVqmsAIQigxj2t01ou0nTrU7BWx0EWE=";
-          };
-        };
-
         # Build telescope-fzf-native with make
         telescope-fzf-native = pkgs.vimPlugins.telescope-fzf-native-nvim.overrideAttrs (old: {
           buildPhase = ''
@@ -115,9 +104,6 @@
           vim-surround
           smart-splits-nvim
           neoscroll-nvim
-
-          # AI
-          snacks-nvim
 
           # Extra
           gen-nvim
