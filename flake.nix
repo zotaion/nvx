@@ -165,6 +165,8 @@
           pkgs.jdt-language-server
           pkgs.vscode-langservers-extracted  # cssls, html, eslint, json
           pkgs.zls
+          pkgs.rust-analyzer
+          pkgs.nodePackages.svelte-language-server
           # Note: Angular language server is typically installed per-project via npm
           # Install it globally with: npm install -g @angular/language-server
           # Or add it to your project's package.json devDependencies
@@ -181,11 +183,22 @@
           pkgs.nodePackages.prettier
           pkgs.python311Packages.autopep8
           pkgs.clang-tools  # clang-format
+          pkgs.rustfmt
         ];
 
         angularTools = [
           pkgs.nodejs  # Required for Angular development and npm
           pkgs.angular-language-server  # Angular language server
+        ];
+
+        rustTools = [
+          pkgs.cargo
+          pkgs.rustc
+          pkgs.clippy
+        ];
+
+        svelteTools = [
+          pkgs.nodejs  # Required for Svelte development and npm
         ];
 
         tools = [
@@ -207,7 +220,7 @@
               --add-flags "--cmd 'set runtimepath^=${neovimConfig}'" \
               --set NVIM_APPNAME "nvx" \
               --prefix XDG_DATA_DIRS : "${packpath}" \
-              --prefix PATH : ${pkgs.lib.makeBinPath (lspServers ++ formatters ++ tools ++ angularTools ++ javaTools)} \
+              --prefix PATH : ${pkgs.lib.makeBinPath (lspServers ++ formatters ++ tools ++ angularTools ++ javaTools ++ rustTools ++ svelteTools)} \
               --set JDTLS_PATH "${pkgs.jdt-language-server}" \
               --set LOMBOK_PATH "${pkgs.lombok}/share/java/lombok.jar"
           '';
@@ -231,7 +244,7 @@
         };
 
         devShells.default = pkgs.mkShell {
-          buildInputs = [ nvx ] ++ lspServers ++ formatters ++ tools ++ angularTools ++ javaTools;
+          buildInputs = [ nvx ] ++ lspServers ++ formatters ++ tools ++ angularTools ++ javaTools ++ rustTools ++ svelteTools;
         };
       }
     );

@@ -38,6 +38,10 @@ require("config.keymaps")
 require("config.autocmds")
 -- Load Angular-specific configuration
 require("config.angular")
+-- Load Rust-specific configuration
+require("config.rust")
+-- Load Svelte-specific configuration
+require("config.svelte")
 
 -- Setup all plugins (Nix provides them, we just configure)
 require("plugins.colorscheme")

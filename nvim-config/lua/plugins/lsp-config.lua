@@ -9,7 +9,7 @@ do
 
 	-- mason lsp config setup (LSP servers provided by Nix PATH)
 	require("mason-lspconfig").setup({
-		ensure_installed = {}, -- Empty, Nix provides all servers: lua_ls, ts_ls, jdtls, cssls, zls, html, eslint, angularls
+		ensure_installed = {}, -- Empty, Nix provides all servers: lua_ls, ts_ls, jdtls, cssls, zls, html, eslint, angularls, rust_analyzer, svelte
 		automatic_installation = false,
 	})
 
@@ -72,6 +72,21 @@ do
 			end,
 		},
 		eslint = {},
+		rust_analyzer = {
+			settings = {
+				["rust-analyzer"] = {
+					cargo = {
+						allFeatures = true,
+					},
+					checkOnSave = {
+						command = "clippy",
+					},
+				},
+			},
+		},
+		svelte = {
+			filetypes = { "svelte" },
+		},
 	}
 	-- Setup each server using the proper API
 	for server, config in pairs(servers) do

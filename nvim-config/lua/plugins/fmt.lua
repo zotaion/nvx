@@ -25,6 +25,8 @@ do
             python = { 'autopep8' },
             c = { 'clang-format' },
             cpp = { 'clang-format' },
+            rust = { 'rustfmt' },
+            svelte = { 'prettier' },
         },
         formatters = {
             ['google-java-format'] = {
