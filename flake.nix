@@ -12,28 +12,16 @@
         pkgs = nixpkgs.legacyPackages.${system};
 
         # Package missing plugins
-        opencode-nvim = pkgs.vimUtils.buildVimPlugin {
-          pname = "opencode.nvim";
-          version = "2024-11-10";
+        # Build lualine-nvim directly to avoid rockspec hash mismatch
+        lualine-nvim = pkgs.vimUtils.buildVimPlugin {
+          pname = "lualine.nvim";
+          version = "2024-11-26";
           src = pkgs.fetchFromGitHub {
-            owner = "NickvanDyke";
-            repo = "opencode.nvim";
-            rev = "8ac5bdf8731a13c19d0876a46b724404e5047f30";
-            sha256 = "sha256-s4vskTpQ0hhG57hXoZMjsgpNank79GdMnPJpjnLrIDk=";
+            owner = "nvim-lualine";
+            repo = "lualine.nvim";
+            rev = "0a5a66803c7407767b799067986b4dc3036e1983";
+            sha256 = "sha256-/UieQXrJL4RQMRC0NvzcFvWlvWCMXxpJB61RDUpWs5U=";
           };
-        };
-
-        springboot-nvim = pkgs.vimUtils.buildVimPlugin {
-          pname = "springboot-nvim";
-          version = "2024-11-10";
-          src = pkgs.fetchFromGitHub {
-            owner = "elmcgill";
-            repo = "springboot-nvim";
-            rev = "3e81c0ed2ca8c05d2cfcbab04addfaa3792dbcb0";
-            sha256 = "sha256-Eo67oYzMDgm7dh53LkpeooHm6psIUGNxGul2K3Sjpss=";
-          };
-          # Skip require check due to module structure
-          doCheck = false;
         };
 
         gen-nvim = pkgs.vimUtils.buildVimPlugin {
@@ -118,7 +106,7 @@
 
           # UI
           melange-nvim
-          lualine-nvim
+          lualine-nvim  # Using custom override above
           which-key-nvim
 
           # Editing
@@ -128,11 +116,7 @@
           smart-splits-nvim
           neoscroll-nvim
 
-          # Java/Spring Boot
-          springboot-nvim
-
           # AI
-          opencode-nvim
           snacks-nvim
 
           # Extra
