@@ -42,7 +42,7 @@
             owner = "folke";
             repo = "snacks.nvim";
             rev = "4e23c75b82aabdb189def39c2c7d2dc25dd0e8a8";
-            sha256 = "sha256-s4vskTpQ0hhG57hXoZMjsgpNank79GdMnPJpjnLrIDk=";
+            sha256 = "sha256-7kf2vy1pIPP/FVqmsAIQigxj2t01ou0nTrU7BWx0EWE=";
           };
         };
 
