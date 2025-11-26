@@ -20,7 +20,7 @@
             owner = "nvim-lualine";
             repo = "lualine.nvim";
             rev = "0a5a66803c7407767b799067986b4dc3036e1983";
-            sha256 = "sha256-/UieQXrJL4RQMRC0NvzcFvWlvWCMXxpJB61RDUpWs5U=";
+            sha256 = "sha256-WcH2dWdRDgMkwBQhcgT+Z/ArMdm+VbRhmQftx4t2kNI=";
           };
         };
 
