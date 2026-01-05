@@ -204,38 +204,34 @@ local function setup_jdtls()
     -- Modify one property called resolveAdditionalTextEditsSupport and set it to true
     extendedClientCapabilities.resolveAdditionalTextEditsSupport = true
 
-    -- Set the command that starts the JDTLS language server jar
+    -- Set the command that starts the JDTLS language server using the wrapper
     local cmd = {
-        'java',
-        '-Declipse.application=org.eclipse.jdt.ls.core.id1',
-        '-Dosgi.bundles.defaultStartLevel=4',
-        '-Declipse.product=org.eclipse.jdt.ls.core.product',
-        '-Dlog.protocol=true',
-        '-Dlog.level=ALL',
-        '-Xms1g',                  -- Initial heap size
-        '-Xmx4g',                  -- Maximum heap size (change this!)
-        '-XX:+UseG1GC',            -- Better garbage collector
-        '-XX:+UseStringDeduplication', -- Reduces memory usage
-        '--add-modules=ALL-SYSTEM',
-        '--add-opens', 'java.base/java.util=ALL-UNNAMED',
-        '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
+        'jdtls',
+        '--jvm-arg=-Declipse.application=org.eclipse.jdt.ls.core.id1',
+        '--jvm-arg=-Dosgi.bundles.defaultStartLevel=4',
+        '--jvm-arg=-Declipse.product=org.eclipse.jdt.ls.core.product',
+        '--jvm-arg=-Dlog.protocol=true',
+        '--jvm-arg=-Dlog.level=ALL',
+        '--jvm-arg=-Xms1g',
+        '--jvm-arg=-Xmx4g',
+        '--jvm-arg=-XX:+UseG1GC',
+        '--jvm-arg=-XX:+UseStringDeduplication',
+        '--jvm-arg=--add-modules=ALL-SYSTEM',
+        '--jvm-arg=--add-opens=java.base/java.util=ALL-UNNAMED',
+        '--jvm-arg=--add-opens=java.base/java.lang=ALL-UNNAMED',
+        -- Suppress incubator modules warning
+        '--jvm-arg=-XX:+UnlockExperimentalVMOptions',
+        '--jvm-arg=-XX:-EnableJVMCI',
     }
 
     -- Add Lombok javaagent if it exists
     if vim.fn.filereadable(lombok) == 1 then
-        table.insert(cmd, '-javaagent:' .. lombok)
+        table.insert(cmd, '--jvm-arg=-javaagent:' .. lombok)
     end
 
-    -- Add remaining command arguments
-    vim.list_extend(cmd, {
-        '-jar',
-        launcher,
-        '-configuration',
-        os_config,
-        '-data',
-        workspace_dir,
-        '-clean',
-    })
+    -- Add data directory
+    table.insert(cmd, '-data')
+    table.insert(cmd, workspace_dir)
 
     -- Configure settings in the JDTLS server
     local settings = {
@@ -417,8 +413,21 @@ local function setup_jdtls()
         settings = settings,
         capabilities = capabilities,
         init_options = init_options,
-        on_attach = on_attach
+        on_attach = on_attach,
+        -- Add handlers to suppress unsupported commands
+        handlers = {
+            ["language/status"] = function(_, result)
+                -- Suppress status messages
+            end,
+        },
     }
+
+    -- Register command handlers for jdtls-specific commands
+    vim.lsp.commands["_java.reloadBundles.command"] = function()
+        -- This command is used by jdtls to reload bundles
+        -- We can safely ignore it as it's handled internally
+        return vim.NIL
+    end
 
     -- Start the JDTLS server
     require('jdtls').start_or_attach(config)
