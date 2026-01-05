@@ -372,11 +372,21 @@ local function setup_jdtls()
 
         -- Defer DAP main class config until JDTLS is fully initialized
         -- This prevents "No LSP client found" errors on startup
-        vim.defer_fn(function()
-            pcall(function()
-                require('jdtls.dap').setup_dap_main_class_configs()
-            end)
-        end, 2000) -- Wait 2 seconds for JDTLS to fully initialize
+        local function setup_dap_configs()
+            -- Check if jdtls client is attached and ready
+            local clients = vim.lsp.get_clients({ bufnr = bufnr, name = 'jdtls' })
+            if #clients > 0 then
+                pcall(function()
+                    require('jdtls.dap').setup_dap_main_class_configs()
+                end)
+            else
+                -- Retry after 500ms if client not ready yet
+                vim.defer_fn(setup_dap_configs, 500)
+            end
+        end
+
+        -- Initial delay before first attempt
+        vim.defer_fn(setup_dap_configs, 3000)
 
         -- Enable jdtls commands to be used in Neovim
         require 'jdtls.setup'.add_commands()
