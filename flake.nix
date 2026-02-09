@@ -1,6 +1,10 @@
 {
   description = "nvx - Custom Neovim Configuration with Nix";
 
+  nixConfig = {
+    extra-experimental-features = "nix-command flakes";
+  };
+
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
