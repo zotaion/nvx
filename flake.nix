@@ -138,7 +138,7 @@
           pkgs.nodePackages.typescript-language-server
           pkgs.jdt-language-server
           pkgs.vscode-langservers-extracted  # cssls, html, eslint, json
-          # pkgs.zls  # Temporarily disabled - broken in current nixpkgs
+          pkgs.zls  # Zig language server
           pkgs.rust-analyzer
           pkgs.nodePackages.svelte-language-server
           # Note: Angular language server is typically installed per-project via npm
