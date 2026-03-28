@@ -111,6 +111,7 @@
 
           # Extra
           gen-nvim
+          render-markdown-nvim
         ];
 
         # Configuration directory
