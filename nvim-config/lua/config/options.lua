@@ -38,6 +38,9 @@ vim.opt.swapfile = false          -- creates a swapfile
 vim.opt.hlsearch = true   -- highlight all matches in search
 vim.opt.ignorecase = true -- ignore case in search
 vim.opt.smartcase = true  -- match case if explicitly stated
-vim.o.shell = "/usr/bin/fish"
+vim.opt.shell = vim.fn.exepath("fish")
+if vim.opt.shell:get() == "" then
+	vim.opt.shell = vim.fn.exepath("bash")
+end
 vim.opt.fixendofline = false
 vim.opt.endofline = true

@@ -13,6 +13,19 @@ do
         -- enable tsx auto closing tag creation
         autotag = {
             enable = true
-        }
+        },
+        -- Disable the ts_context_commentstring module integration via treesitter
+        -- We handle it directly in the Comment.nvim config with pcall protection
+        context_commentstring = {
+            enable = false,
+            enable_autocmd = false,
+        },
+    })
+
+    -- Configure ts_context_commentstring directly - disable the CursorHold autocmd
+    -- which errors on filetypes without a treesitter parser.
+    -- Comment.nvim's pre_hook (wrapped in pcall) handles commentstring detection instead.
+    require("ts_context_commentstring").setup({
+        enable_autocmd = false,
     })
 end
