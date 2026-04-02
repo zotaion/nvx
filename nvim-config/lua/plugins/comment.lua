@@ -10,9 +10,19 @@ do
 		-- gain access to tsx commenting plugins functions
 		local ts_context_comment_string = require("ts_context_commentstring.integrations.comment_nvim")
 
+		-- Cache the original pre_hook from ts_context_commentstring
+		local ts_pre_hook = ts_context_comment_string.create_pre_hook()
+
 		-- setup the comment plugin to use ts_context_comment_string to check if we are attempting to comment out a tsx element
 		-- if we are use ts_context_comment_string to comment it out
+		-- Wrap in pcall to avoid errors on filetypes without a treesitter parser
 	comment.setup({
-		pre_hook = ts_context_comment_string.create_pre_hook(),
+		pre_hook = function(ctx)
+			local ok, result = pcall(ts_pre_hook, ctx)
+			if not ok then
+				return nil
+			end
+			return result
+		end,
 	})
 end
