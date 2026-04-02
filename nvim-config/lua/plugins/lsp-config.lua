@@ -110,13 +110,7 @@ do
 
 		-- Filter diagnostics instead of disabling them completely
 		handlers = {
-			["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
-				-- Filter out common false positives
-				virtual_text = true,
-				signs = true,
-				underline = true,
-				update_in_insert = false,
-			}),
+			["textDocument/publishDiagnostics"] = vim.lsp.diagnostic.on_publish_diagnostics,
 		},
 
 		on_attach = function(client, bufnr)

@@ -177,6 +177,8 @@
         ];
 
         tools = [
+          pkgs.tree-sitter
+          pkgs.fish
           pkgs.ripgrep
           pkgs.fd
           pkgs.git
