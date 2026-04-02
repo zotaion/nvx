@@ -136,12 +136,12 @@
         # LSP servers and tools
         lspServers = [
           pkgs.lua-language-server
-          pkgs.nodePackages.typescript-language-server
+          pkgs.typescript-language-server
           pkgs.jdt-language-server
           pkgs.vscode-langservers-extracted  # cssls, html, eslint, json
           pkgs.zls  # Zig language server
           pkgs.rust-analyzer
-          pkgs.nodePackages.svelte-language-server
+          pkgs.svelte-language-server
           # Note: Angular language server is typically installed per-project via npm
           # Install it globally with: npm install -g @angular/language-server
           # Or add it to your project's package.json devDependencies
@@ -155,7 +155,7 @@
         formatters = [
           pkgs.stylua
           pkgs.google-java-format
-          pkgs.nodePackages.prettier
+          pkgs.prettier
           pkgs.python311Packages.autopep8
           pkgs.clang-tools  # clang-format
           pkgs.rustfmt
