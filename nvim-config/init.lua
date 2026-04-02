@@ -1,6 +1,7 @@
 -- nvx - Nix-managed Neovim configuration
 -- All plugins are provided via Nix, no runtime plugin manager needed
 vim.g.have_nerd_font = true
+require('vim._core.ui2').enable()
 -- Suppress specific deprecation warnings
 local notify_original = vim.notify
 vim.notify = function(msg, ...)
@@ -68,4 +69,3 @@ require("plugins.opencode")
 require("plugins.whichkey")
 require("plugins.diffview")
 require("plugins.render-markdown")
-require('vim._core.ui2').enable()
